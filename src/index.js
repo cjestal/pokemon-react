@@ -1,111 +1,212 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App';
+// import App from './App';
 import './index.css';
 
 const pokemons = [
 		{
 			"url": "https://pokeapi.co/api/v2/pokemon/1/",
 			"name": "bulbasaur",
-			"starter": true
+			"starter": true,
+			"type": "grass"
 		},
 		{
 			"url": "https://pokeapi.co/api/v2/pokemon/2/",
 			"name": "ivysaur",
-			"starter": true
+			"starter": true,
+			"type": "grass"
 		},
 		{
 			"url": "https://pokeapi.co/api/v2/pokemon/3/",
 			"name": "venusaur",
-			"starter": true
+			"starter": true,
+			"type": "grass"
 		},
 		{
 			"url": "https://pokeapi.co/api/v2/pokemon/4/",
 			"name": "charmander",
-			"starter": true
+			"starter": true,
+			"type": "fire"
 		},
 		{
 			"url": "https://pokeapi.co/api/v2/pokemon/5/",
 			"name": "charmeleon",
-			"starter": true
+			"starter": true,
+			"type": "fire"
 		},
 		{
 			"url": "https://pokeapi.co/api/v2/pokemon/6/",
 			"name": "charizard",
-			"starter": true
+			"starter": true,
+			"type": "fire"
 		},
 		{
 			"url": "https://pokeapi.co/api/v2/pokemon/7/",
 			"name": "squirtle",
-			"starter": true
+			"starter": true,
+			"type": "water"
 		},
 		{
 			"url": "https://pokeapi.co/api/v2/pokemon/8/",
 			"name": "wartortle",
-			"starter": true
+			"starter": true,
+			"type": "water"
 		},
 		{
 			"url": "https://pokeapi.co/api/v2/pokemon/9/",
 			"name": "blastoise",
-			"starter": true
+			"starter": true,
+			"type": "water"
 		},
 		{
 			"url": "https://pokeapi.co/api/v2/pokemon/10/",
 			"name": "caterpie",
-			"starter": false
+			"starter": false,
+			"type": "bug"
 		},
 		{
 			"url": "https://pokeapi.co/api/v2/pokemon/11/",
 			"name": "metapod",
-			"starter": false
+			"starter": false,
+			"type": "bug"
 		},
 		{
 			"url": "https://pokeapi.co/api/v2/pokemon/12/",
 			"name": "butterfree",
-			"starter": false
+			"starter": false,
+			"type": "bug"
 		},
 		{
 			"url": "https://pokeapi.co/api/v2/pokemon/13/",
 			"name": "weedle",
-			"starter": false
+			"starter": false,
+			"type": "bug"
 		},
 		{
 			"url": "https://pokeapi.co/api/v2/pokemon/14/",
 			"name": "kakuna",
-			"starter": false
+			"starter": false,
+			"type": "bug"
 		},
 		{
 			"url": "https://pokeapi.co/api/v2/pokemon/15/",
 			"name": "beedrill",
-			"starter": false
+			"starter": false,
+			"type": "bug"
 		},
 		{
 			"url": "https://pokeapi.co/api/v2/pokemon/16/",
 			"name": "pidgey",
-			"starter": false
+			"starter": false,
+			"type": "flying"
 		},
 		{
 			"url": "https://pokeapi.co/api/v2/pokemon/17/",
 			"name": "pidgeotto",
-			"starter": false
+			"starter": false,
+			"type": "flying"
 		},
 		{
 			"url": "https://pokeapi.co/api/v2/pokemon/18/",
 			"name": "pidgeot",
-			"starter": false
+			"starter": false,
+			"type": "flying"
 		},
 		{
 			"url": "https://pokeapi.co/api/v2/pokemon/19/",
 			"name": "rattata",
-			"starter": false
+			"starter": false,
+			"type": "normal"
 		},
 		{
 			"url": "https://pokeapi.co/api/v2/pokemon/20/",
 			"name": "raticate",
-			"starter": false
+			"starter": false,
+			"type": "normal"
 		}];
 
+
+
+class FilterablePokemonTable extends React.Component {
+	render () {
+		return (
+			<div>
+				<PokemonSearchBar />
+				<PokemonTable pokemons={this.props.pokemons}/>
+			</div>
+		);
+	}
+}
+
+class PokemonSearchBar extends React.Component {
+render () {
+		return (
+			<form>
+				<input type="text" placeholder="Enter pokemon name..."/>
+				<p>
+					<input type="checkbox" />
+					{' '} Show starter pokemons only
+				</p>
+			</form>
+		);
+	}
+}
+
+class PokemonTable extends React.Component {
+	render () {
+		var rows = [];
+		var lastPokemonType = null;
+
+		this.props.pokemons.forEach( function (pokemon) {
+
+			if (pokemon.type !== lastPokemonType) {
+				rows.push(<PokemonTypeRow type={pokemon.type} key={pokemon.type} />);
+			}
+
+			rows.push(<PokemonRow name={pokemon.name} url={pokemon.url} key={pokemon.name} />);
+			lastPokemonType = pokemon.type;
+		});
+
+		return (
+			<table>
+				<thead>
+					<tr>
+						<th>Pokemon Name</th>
+						<th>URL</th>
+					</tr>
+				</thead>
+				<tbody>
+					{rows}
+				</tbody>
+			</table>
+		);
+	}
+}
+
+class PokemonRow extends React.Component {
+	render () {
+		return (
+			<tr>
+				<td>{this.props.name}</td>
+				<td><a href={this.props.url}>{this.props.url}</a></td>
+			</tr>
+		);
+	}
+}
+
+class PokemonTypeRow extends React.Component {
+	render () {
+		return (
+			<tr>
+				<th colspan="2">
+					{this.props.type}
+				</th>
+			</tr>
+		);
+	}
+}
+
 ReactDOM.render(
-  <App />,
+  <FilterablePokemonTable pokemons={pokemons}/>,
   document.getElementById('root')
 );
