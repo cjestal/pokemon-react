@@ -128,28 +128,88 @@ const pokemons = [
 
 
 class FilterablePokemonTable extends React.Component {
+	constructor (props) {
+		super(props);
+		this.state = {
+			filterText: '',
+			starterOnly: false
+		};
+
+		this.handleCheckBoxChange = this.handleCheckBoxChange.bind(this);
+		this.handleTextChange = this.handleTextChange.bind(this);
+	}
+
+	handleTextChange (filterText) {
+		this.setState({
+			filterText: filterText
+		});
+	}
+
+	handleCheckBoxChange (starterOnly) {
+		this.setState({
+			starterOnly: starterOnly
+		});
+	}
+
 	render () {
 		return (
-			<div>
-				<PokemonSearchBar />
-				<PokemonTable pokemons={this.props.pokemons}/>
+			<div className="container">
+				<PokemonSearchBar 
+					id="search-bar"
+					filterText={this.state.filterText}
+					starterOnly={this.state.starterOnly}
+					onCheckBoxChange={this.handleCheckBoxChange}
+					onFilterChange={this.handleTextChange}
+				/>
+				<PokemonTable 
+					id="search-table"
+					pokemons={this.props.pokemons}
+					filterText={this.state.filterText}
+					starterOnly={this.state.starterOnly}
+					onCheckBoxChange={this.handleCheckBoxChange}
+					onFilterChange={this.handleTextChange}
+				/>
 			</div>
 		);
 	}
 }
 
 class PokemonSearchBar extends React.Component {
-render () {
-		return (
-			<form>
-				<input type="text" placeholder="Enter pokemon name..."/>
-				<p>
-					<input type="checkbox" />
-					{' '} Show starter pokemons only
-				</p>
-			</form>
-		);
+	constructor (props) {
+		super(props);
+		this.handleCheckBoxChange = this.handleCheckBoxChange.bind(this); //bind to component
+		this.handleTextChange = this.handleTextChange.bind(this); //bind to component
 	}
+
+	handleTextChange (event) {
+		this.props.onFilterChange(event.target.value);
+	}
+
+	handleCheckBoxChange (event) {
+		this.props.onCheckBoxChange(event.target.value);
+	}
+
+
+	render () {
+			return (
+				<form>
+					<input 
+						type="text" 
+						placeholder="Enter pokemon name..."
+						value={this.props.filterText}
+						onChange={this.handleTextChange}
+					/>
+					<p>
+						<input 
+							type="checkbox" 
+							checked={this.props.starterOnly}
+							onChange={this.handleCheckBoxChange}
+						/>
+						{' '} Show starter pokemons only
+					</p>
+				</form>
+			);
+		}
 }
 
 class PokemonTable extends React.Component {
@@ -157,8 +217,13 @@ class PokemonTable extends React.Component {
 		var rows = [];
 		var lastPokemonType = null;
 
-		this.props.pokemons.forEach( function (pokemon) {
+		this.props.pokemons.forEach((pokemon) => {
+			//used for filtering pokemons
+			if (pokemon.name.indexOf(this.props.filterText) === -1 || (!pokemon.starter && this.props.starterOnly)) {
+				return;
+			}
 
+			//updates the pokemon type row
 			if (pokemon.type !== lastPokemonType) {
 				rows.push(<PokemonTypeRow type={pokemon.type} key={pokemon.type} />);
 			}
@@ -183,24 +248,20 @@ class PokemonTable extends React.Component {
 	}
 }
 
+class PokemonTypeRow extends React.Component {
+	render () {
+		return (
+			<tr><th colspan="2">{this.props.type}</th></tr>
+		);
+	}
+}
+
 class PokemonRow extends React.Component {
 	render () {
 		return (
 			<tr>
 				<td>{this.props.name}</td>
 				<td><a href={this.props.url}>{this.props.url}</a></td>
-			</tr>
-		);
-	}
-}
-
-class PokemonTypeRow extends React.Component {
-	render () {
-		return (
-			<tr>
-				<th colspan="2">
-					{this.props.type}
-				</th>
 			</tr>
 		);
 	}
